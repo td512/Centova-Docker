@@ -1,0 +1,6 @@
+FROM ubuntu:20.04
+MAINTAINER "Theo M. <docker@theom.nz>"
+COPY ENTRYPOINT /
+COPY install /
+EXPOSE 2199
+ENTRYPOINT /ENTRYPOINT
