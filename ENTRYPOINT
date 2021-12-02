@@ -4,45 +4,50 @@ echo "==> Launched ENTRYPOINT"
 echo ">>>    Theo M's Centova Cast Install Script    <<<"
 echo ">>> This could take a bit. Sit back, and relax <<<"
 echo ">>>            We'll take it from here.        <<<"
-if [ -f /install ]
+if [ -f /.install ]
 then
   APT_MIRROR=${APT_MIRROR:-'archive.ubuntu.com'}
   echo "==> Updating APT sources to $APT_MIRROR"
   sed -i -e "s|archive.ubuntu.com|$APT_MIRROR|g" /etc/apt/sources.list
   echo "==> Checking environment"
+  export  DEBIAN_FRONTEND="noninteractive"
   if [ -n "$LICENSE_KEY" ]
   then
     echo "==> License Key Found!"
+    echo "==> Downloading Centova Cast Installer"
+    wget -O /install -q http://install.centova.com/$LICENSE_KEY
   else
     echo "/!\     No License Key specified. Make sure you're    /!\\"
     echo "/!\ setting LICENSE_KEY when launching this container /!\\"
     exit 1
   fi
-  echo "==> Writing License"
-  sed -i -e "s|@@LICENSE_KEY@@|$LICENSE_KEY|g" install
-  echo "==> Updating APT cache"
-  apt-get update
-  echo "==> Installing required packages"
-  export PACKAGES="ca-certificates libpsl5 openssl publicsuffix wget iproute2 python3 binutils binutils-common binutils-x86-64-linux-gnu build-essential cpp cpp-9   dirmngr dpkg-dev fakeroot g++ g++-9 galera-3 gawk gcc gcc-9 gcc-9-base gnupg   gnupg-l10n gnupg-utils gpg gpg-agent gpg-wks-client gpg-wks-server gpgconf   gpgsm libaio1 libalgorithm-diff-perl libalgorithm-diff-xs-perl   libalgorithm-merge-perl libasan5 libasn1-8-heimdal libassuan0 libatomic1   libbinutils libc-dev-bin libc6-dev libc6-i386 libcc1-0 libcgi-fast-perl   libcgi-pm-perl libconfig-inifiles-perl libcrypt-dev libctf-nobfd0 libctf0   libdbd-mysql-perl libdbi-perl libdpkg-perl libencode-locale-perl libfakeroot   libfcgi-perl libfile-fcntllock-perl libgcc-9-dev libgdbm-compat4 libgdbm6   libgomp1 libgssapi3-heimdal libhcrypto4-heimdal libheimbase1-heimdal   libheimntlm0-heimdal libhtml-parser-perl libhtml-tagset-perl   libhtml-template-perl libhttp-date-perl libhttp-message-perl   libhx509-5-heimdal libio-html-perl libisl22 libitm1 libkrb5-26-heimdal   libksba8 libldap-2.4-2 libldap-common liblocale-gettext-perl liblsan0   liblwp-mediatypes-perl libmpc3 libmpfr6 libmysqlclient21 libnpth0   libperl5.30 libpopt0 libquadmath0 libreadline5 libroken18-heimdal libsasl2-2   libsasl2-modules libsasl2-modules-db libsigsegv2 libsnappy1v5   libstdc++-9-dev libterm-readkey-perl libtimedate-perl libtsan0 libubsan1   liburi-perl libwind0-heimdal libwrap0 linux-libc-dev lsof make manpages   manpages-dev mariadb-client-10.3 mariadb-client-core-10.3 mariadb-common   mariadb-server mariadb-server-10.3 mariadb-server-core-10.3 mysql-common   netbase patch perl perl-modules-5.30 pinentry-curses psmisc rsync socat   unzip"
-  apt-get install -y $PACKAGES
-  echo "==> Resetting Permissions"
-  chmod a+x install
   if [ -n "$INSTALL_OPTS" ]
   then
     echo "==> Running install with options: $INSTALL_OPTS"
-    ./install $INSTALL_OPTS 
   else
-    echo "==> Running install with default option: --shoutcast1"
+    echo "==> Running install with default options: --shoutcast1 --deps"
     echo "==> Did you mean to run this install with different options?"
     echo "==> If so, destroy this container and create a new one"
     echo "==> specifying INSTALL_OPTS in the environment"
+    echo "==> Sleeping 5 seconds before beginning install"
+    sleep 5
     export INSTALL_OPTS="--shoutcast1 --deps"
-    ./install $INSTALL_OPTS
   fi
+  echo "==> Updating APT cache"
+  apt-get update
+  echo "==> Installing required packages"
+  export PACKAGES="bubblewrap m4 lsb-release fontconfig-config fonts-dejavu-core icu-devtools krb5-locales libbrotli1 libcairo2 libcurl4 libcurl4-openssl-dev libfontconfig1 libfreetype6 libgssapi-krb5-2 libicu-dev libicu66 libk5crypto3 libkeyutils1 libkrb5-3 libkrb5support0 libnghttp2-14 libogg-dev libogg0 libpixman-1-0 libpng16-16 librtmp1 libspeex-dev libspeex1 libssh-4 libtheora-dev libtheora0 libvorbis-dev libvorbis0a libvorbisenc2 libvorbisfile3 libx11-6 libx11-data libxau6 libxcb-render0 libxcb-shm0 libxcb1 libxdmcp6 libxext6 libxml2 libxml2-dev libxrender1 libxslt1-dev libxslt1.1 tzdata ucf ca-certificates libpsl5 openssl publicsuffix wget iproute2 python3 binutils binutils-common binutils-x86-64-linux-gnu build-essential cpp cpp-9   dirmngr dpkg-dev fakeroot g++ g++-9 galera-3 gawk gcc gcc-9 gcc-9-base gnupg   gnupg-l10n gnupg-utils gpg gpg-agent gpg-wks-client gpg-wks-server gpgconf   gpgsm libaio1 libalgorithm-diff-perl libalgorithm-diff-xs-perl   libalgorithm-merge-perl libasan5 libasn1-8-heimdal libassuan0 libatomic1   libbinutils libc-dev-bin libc6-dev libc6-i386 libcc1-0 libcgi-fast-perl   libcgi-pm-perl libconfig-inifiles-perl libcrypt-dev libctf-nobfd0 libctf0   libdbd-mysql-perl libdbi-perl libdpkg-perl libencode-locale-perl libfakeroot   libfcgi-perl libfile-fcntllock-perl libgcc-9-dev libgdbm-compat4 libgdbm6   libgomp1 libgssapi3-heimdal libhcrypto4-heimdal libheimbase1-heimdal   libheimntlm0-heimdal libhtml-parser-perl libhtml-tagset-perl   libhtml-template-perl libhttp-date-perl libhttp-message-perl   libhx509-5-heimdal libio-html-perl libisl22 libitm1 libkrb5-26-heimdal   libksba8 libldap-2.4-2 libldap-common liblocale-gettext-perl liblsan0   liblwp-mediatypes-perl libmpc3 libmpfr6 libmysqlclient21 libnpth0   libperl5.30 libpopt0 libquadmath0 libreadline5 libroken18-heimdal libsasl2-2   libsasl2-modules libsasl2-modules-db libsigsegv2 libsnappy1v5   libstdc++-9-dev libterm-readkey-perl libtimedate-perl libtsan0 libubsan1   liburi-perl libwind0-heimdal libwrap0 linux-libc-dev lsof make manpages   manpages-dev mariadb-client-10.3 mariadb-client-core-10.3 mariadb-common   mariadb-server mariadb-server-10.3 mariadb-server-core-10.3 mysql-common   netbase patch perl perl-modules-5.30 pinentry-curses psmisc rsync socat   unzip"
+  apt-get install -y $PACKAGES
+  echo "==> Resetting Permissions"
+  chmod a+x install
+  echo "==> Beginning install"
+  ./install $INSTALL_OPTS 
   echo "==> Install completed!"
   echo "==> Tidying up"
   rm -f /install
+  rm -f /.install
 fi
 echo "==> Booting Centova"
+unset DEBIAN_FRONTEND
 /usr/local/centovacast/centovacast start
 tail -f /usr/local/centovacast/var/log/cc-*.log /usr/local/centovacast/var/log/control/master.log /usr/local/centovacast/var/log/imaged/*.log /usr/local/centovacast/var/log/comet/cc-comet.log
